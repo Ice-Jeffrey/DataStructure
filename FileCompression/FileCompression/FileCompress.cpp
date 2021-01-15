@@ -6,7 +6,6 @@
 #include "bitstream.hpp"
 using namespace std;
 
-//�����ѹ������Ĵ�����ʾ 
 int Showhelp()
 {
 	cout << "Wrong instruction!" << endl;
@@ -195,7 +194,6 @@ int main(int argc,char* argv[])
 				t.nodes[par].rchild = i;	 
 		}
 		 
-		cout << "��ʼ������ļ�:" << Name << endl;
 		fstream Unzip(Name,ios::out | ios::binary);
 		if(!Unzip)
 		{
