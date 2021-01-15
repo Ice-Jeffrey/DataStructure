@@ -1,0 +1,7 @@
+# IDE issues
+.vscode
+.idea
+
+# test files
+*.txt
+*.exe
