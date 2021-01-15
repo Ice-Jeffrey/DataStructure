@@ -4,8 +4,8 @@
 #include <vector>
 #include <ctime>
 #include <algorithm>
-#include "Huffman.h"
-#include "Bitstream.h"
+#include "huffman.hpp"
+#include "bitstream.hpp"
 using namespace std;
 
 

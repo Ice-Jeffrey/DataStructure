@@ -2,7 +2,7 @@
 #include <string>
 #include <cstring>
 #include <algorithm>
-#include "Huffman.h"
+#include "huffman.hpp"
 using namespace std;
 
 bool cmp1(HuffmanTree::HNode &node1, HuffmanTree::HNode &node2) {

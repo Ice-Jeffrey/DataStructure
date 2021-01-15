@@ -1,5 +1,5 @@
 #include <iostream>
-#include "Bitstream.h"
+#include "bitstream.hpp"
 using namespace std;
 
 BitOStream::BitOStream(ostream *ostr) {
