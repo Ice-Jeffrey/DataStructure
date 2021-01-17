@@ -1,75 +1,66 @@
-#include<cstring>
-#include<string>
+#include <cstring>
+#include <string>
+#include <algorithm>
 typedef int Elemtype;
 typedef char* HCode; 
 
-struct HuffmanNode
-{
-	Elemtype weight;                    //½ÚµãµÄÈ¨Öµ
-	int parent,lchild,rchild,info;      //½ÚµãµÄĞòºÅ£¬¸¸½Úµã¡¢×ó×Ó¼°ÓÒ×ÓµÄĞòºÅ
+// å¯¹å“ˆå¤«æ›¼æ ‘ç»“ç‚¹çš„å®šä¹‰
+struct HuffmanNode {
+	Elemtype weight;	// å½“å‰ç»“ç‚¹çš„æƒå€¼
+	int parent, lchild, rchild, info;	// å½“å‰ç»“ç‚¹çš„çˆ¶èŠ‚ç‚¹ã€å­èŠ‚ç‚¹ç­‰å…¶ä»–ä¿¡æ¯
 };
 typedef HuffmanNode HNode;
 
-struct HuffmanTree
-{
+// ä½¿ç”¨é™æ€é“¾è¡¨å®ç°å“ˆå¤«æ›¼æ ‘
+struct HuffmanTree {
 	HNode *nodes;
 	int leafnumber;
 };
 typedef HuffmanTree HTree;
 
-//ÓÃÓÚ¹¹Ôì¹ş·òÂüÊ÷µÄº¯Êı
-int CreateHuffmanTree(HTree &t,int leafnumber,int* weights)
-{
-	//ÉêÇëÄÚ´æ¿Õ¼äÀ´´æ·Å¹ş·òÂüÊ÷µÄ¸÷¸ö¸ù½ÚµãÒÔ¼°Ò¶½Úµã
-	t.nodes = new HNode[2*leafnumber-1];
+// é‡è½½sortå‡½æ•°çš„å‡½æ•°
+bool cmp1(HNode a, HNode b) {
+	return a.weight < b.weight;
+}
+
+bool cmp2(HNode a, HNode b) {
+	return a.info < b.info;
+}
+
+// æ„å»ºå“ˆå¤«æ›¼æ ‘
+int CreateHuffmanTree(HTree &t, int num, int* weights) {
+	// è¿›è¡Œé”™è¯¯æ£€æŸ¥
+	if(num <= 0 || weights == nullptr)
+		return 0;
+
+	int leafnumber = num;
+	// è¿›è¡Œåˆå§‹åŒ–
+	t.nodes = new HNode[2 * leafnumber - 1];
 	t.leafnumber = leafnumber;
 
-    //³õÊ¼»¯¸÷¸öÒ¶½Úµã,¶ÁÈëÆäÈ¨Öµ²¢³õÊ¼»¯Æä¸¸½Úµã¡¢×ó×Ó½Úµã¼°ÓÒ×Ó½Úµã£¬Éè³õÊ¼»¯µÄ³õÊ¼ÖµÎª-1
-	for(int i=0;i<leafnumber;i++)
-    {
-        t.nodes[i].weight = weights[i];
+	for(int i = 0; i < leafnumber; i++) {
+		t.nodes[i].weight = weights[i];
 		t.nodes[i].parent = -1;
-        t.nodes[i].lchild = -1;
-        t.nodes[i].rchild = -1;
-        t.nodes[i].info = i;                    //infoÎªÆäÔÚÔ­Êı×éÖĞµÄÎ»ÖÃĞÅÏ¢ 
+		t.nodes[i].lchild = -1;
+		t.nodes[i].rchild = -1;
+		t.nodes[i].info = i;	// infoä¸å½“å‰ç»“ç‚¹ä»£è¡¨çš„å­—ç¬¦ç›¸å¯¹åº”
     }
     
-    //¶ÔºóĞøÎ´³öÏÖµ«ĞèÒªµÄ½Úµã½øĞĞ³õÊ¼»¯ 
-    for(int i=leafnumber;i<2*leafnumber-1;i++)
-    {
+    for(int i = leafnumber; i < 2 * leafnumber - 1; i++) {
     	t.nodes[i].parent = -1;
     	t.nodes[i].lchild = -1;
     	t.nodes[i].rchild = -1;
     	t.nodes[i].info = -1;
 	}
 
-    //¶Ôt´ú±íµÄÊı¾İ½øĞĞÃ°ÅİÅÅĞò£¬µ«²»¸Ä±äÔ­À´µÄweightsÊı×é 
-	for(int i=0;i<leafnumber-1;i++)
-	{
-		for(int j=0;j<leafnumber-1-i;j++)
-		{
-			HNode temp;                                         //tempÎªÒ»ÁÙÊ±µÄÖĞ¼ä±äÁ¿ 
-			if(t.nodes[j].weight > t.nodes[j+1].weight)
-			{
-				temp.info = t.nodes[j].info;
-				temp.weight = t.nodes[j].weight;
-				t.nodes[j].info = t.nodes[j+1].info;
-				t.nodes[j].weight = t.nodes[j+1].weight;
-				t.nodes[j+1].info = temp.info;
-				t.nodes[j+1].weight = temp.weight;
-			}
-		}
-	}
+    // æ ¹æ®æƒå€¼å¯¹å¶ç»“ç‚¹è¿›è¡Œæ’åº
+	std::sort(t.nodes, t.nodes + leafnumber, cmp1);
 
-    /*ÔÚÒÑÖª½ÚµãÖĞÑ°ÕÒ×îĞ¡µÄÁ½¸ö½ÚµãºÏ²¢£¬
-    ĞÂµÄ¹ş·òÂüÊ÷µÄ¸ù½ÚµãµÄÈ¨ÖµÎªÁ½Ò¶½ÚµãÈ¨ÖµÖ®ºÍ¡£
-    ÓÉÓÚÓÉn¿ÃÊ÷ºÏ²¢Îª1¿ÃÊ÷£¬Ôò¹²ĞèÒªºÏ²¢leafnumber-1´Î*/
-    int m=0,n=leafnumber;
-    for(int i=0;i<leafnumber-1;i++)
-    {
-        int min,k1=0,k2=0;
+    // å¼€å§‹å»ºç«‹å“ˆå¤«æ›¼æ ‘
+    int m = 0, n = leafnumber;	// m, nä¸ºæŒ‡å‘æœªéå†ç»“ç‚¹çš„ä¸¤ä¸ªæŒ‡é’ˆ
+    for(int i = 0; i < leafnumber - 1; i++) {
+        int min, k1 = 0, k2 = 0;	// k1, k2ä»£è¡¨ä¸¤ä¸ªæƒå€¼æœ€å°å­¤ç«‹ç»“ç‚¹çš„ä¸‹æ ‡
 
-        //ÕÒµ½Á½¸öparentÈÔÎª-1ÇÒÈ¨Öµ×îĞ¡µÄÒ¶½Úµã 
 		if (m < leafnumber && (n >= leafnumber + i || t.nodes[m].weight <= t.nodes[n].weight))
 	        k1 = m++;
         else
@@ -79,22 +70,19 @@ int CreateHuffmanTree(HTree &t,int leafnumber,int* weights)
 	        k2 = m++;
         else
 	        k2 = n++;
-        //cout << k1 << " " << k2 << " " << t.nodes[k1].info << " " << t.nodes[k2].info << endl;
-        //ÔÚ²âÊÔÊ±Êä³öÄ£ÄâÕû¸ö¹ı³Ì
 
-        t.nodes[i+leafnumber].info = i+leafnumber;
-        t.nodes[i+leafnumber].weight = t.nodes[k1].weight + t.nodes[k2].weight;
-        t.nodes[i+leafnumber].parent = -1;
-        t.nodes[k1].parent = i+leafnumber;
-        t.nodes[k2].parent = i+leafnumber;
-        //Ô¼¶¨ÏÂ±êĞ¡µÄÎª×ó×Ó£¬ÏÂ±ê´óµÄÎªÓÒ×Ó 
-        if(t.nodes[k1].info < t.nodes[k2].info)
-        {
+        t.nodes[i + leafnumber].info = i + leafnumber;
+        t.nodes[i + leafnumber].weight = t.nodes[k1].weight + t.nodes[k2].weight;
+        t.nodes[i + leafnumber].parent = -1;
+        t.nodes[k1].parent = i + leafnumber;
+        t.nodes[k2].parent = i + leafnumber;
+
+        // è§„å®šå·¦å­ç»“ç‚¹åºå·å°äºå³å­ç»“ç‚¹åºå·
+        if(t.nodes[k1].info < t.nodes[k2].info) {
         	t.nodes[i+leafnumber].lchild = t.nodes[k1].info;
             t.nodes[i+leafnumber].rchild = t.nodes[k2].info;
 		}
-        else
-        {
+        else {
         	t.nodes[i+leafnumber].lchild = t.nodes[k2].info;
         	t.nodes[i+leafnumber].rchild = t.nodes[k1].info;
 		}
@@ -102,64 +90,32 @@ int CreateHuffmanTree(HTree &t,int leafnumber,int* weights)
     return 1;
 }
 
-//Í¨¹ı¶ş²æÊ÷¹¹Ôì¹ş·òÂü±àÂë£¬¼´²»µÈ³¤±àÂë£¬ÉèÏò×óÎª0£¬ÏòÓÒÎª1£¬htÎªÃ¿¸ö½Úµã¹ş·òÂü±àÂë×Ö·û´®µÄÖ¸ÏòÏòÁ¿ 
-int HuffmanCoding(HTree &t,HCode *hc)
-{
+// æ ¹æ®å“ˆå¤«æ›¼æ ‘è‡ªåº•å‘ä¸Šå¾—åˆ°å„ä¸ªç»“ç‚¹å“ˆå¤«æ›¼ç¼–ç 
+int HuffmanCoding(HTree &t, HCode *hc) {
 	int leafnumber = t.leafnumber;
-	
-	//ÎªÃ¿¸ö½Úµã´ú±íµÄ×Ö·û´®ÉêÇë¶ÔÓ¦µÄ±àÂë¿Õ¼ä
 	char *cd;
-	cd = new char[100];
+	cd = new char[1000];
 
-    //°´ÕÕÊäÈëµÄË³Ğò¶Ô¹ş·òÂüÊ÷µÄ´¢´æ¿Õ¼äµÄ¸÷½áµã½øĞĞÅÅĞò£¬ÒÀ´ÎÓëweightsÊı×éÏà¶ÔÓ¦ 
-	for(int i=0;i<leafnumber;i++)
-	{
-		for(int j=0;j<leafnumber-i-1;j++)
-		{
-			HNode temp;
-			if(t.nodes[j].info > t.nodes[j+1].info)
-			{
-				temp.info = t.nodes[j].info;
-				temp.weight = t.nodes[j].weight;
-				temp.parent = t.nodes[j].parent;
-				temp.lchild = t.nodes[j].lchild;
-				temp.rchild = t.nodes[j].rchild;
-				t.nodes[j].info = t.nodes[j+1].info;
-				t.nodes[j].weight = t.nodes[j+1].weight;
-				t.nodes[j].rchild = t.nodes[j+1].rchild;
-				t.nodes[j].parent = t.nodes[j+1].parent;
-				t.nodes[j].lchild = t.nodes[j+1].rchild;
-				t.nodes[j+1].info = temp.info;
-				t.nodes[j+1].weight = temp.weight;
-				t.nodes[j+1].parent = temp.parent;
-				t.nodes[j+1].lchild = temp.lchild;
-				t.nodes[j+1].rchild = temp.rchild;
-			}
-		}
-	}
+	// æ ¹æ®infoè¿›è¡Œæ’åº
+    std::sort(t.nodes, t.nodes + leafnumber, cmp2);
 
-    //¿ªÊ¼Çó¸÷¸ö½ÚµãµÄ¹ş·òÂü±àÂë 
+    // è‡ªåº•å‘ä¸Šå¾—åˆ°å“ˆå¤«æ›¼ç¼–ç 
     int m=0; 
-	for(int i=0;i<leafnumber;i++)
-	{
-		int start = leafnumber-1;
+	for(int i = 0; i < leafnumber; i++) {
+		int start = leafnumber - 1;
 		cd[start] = '\0';
 		hc[i] = new char[100];
 		
-		int c,flag;
+		int c, flag;
 		int f;
-		//´ÓÒ¶½Úµãµ½¸ù½ÚµãÄæÏòÇó¹ş·òÂü±àÂë
-		for(c=i,f=t.nodes[i].parent;f!=-1;c=f,f=t.nodes[f].parent)
-		{
+		for(c = i, f = t.nodes[i].parent; f != -1; c = f, f = t.nodes[f].parent) {
 			if(t.nodes[f].rchild == c)
-			 cd[--start] = '1';
+				cd[--start] = '1';
 			else
-			 cd[--start] = '0';
+				cd[--start] = '0';
 		}
-
-		//½«µÃµ½µÄ¹ş·òÂü±àÂë´æµ½½á¹¹ÌåÖĞ 
-		int len = leafnumber - start;
-		strcpy(hc[i],&cd[start]);
+ 
+		strcpy(hc[i], &cd[start]);
 	}
 	return 0;
 }

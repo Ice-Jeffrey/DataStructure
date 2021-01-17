@@ -4,5 +4,6 @@
 
 # test files
 *.txt
+*.huf
 *.exe
 *.out
